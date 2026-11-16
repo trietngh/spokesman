@@ -1,0 +1,23 @@
+[workspace]
+authors = ["Triet Nguyen <hoangtriet26@gmail.com>"]
+channels = ['conda-forge']
+name = "spokesman"
+platforms = [
+  { platform = "linux-64", cuda = "13.2" },
+]
+version = "0.1.0"
+[tasks]
+
+[dependencies]
+pytorch-gpu = "*"
+transformers = "*"
+safetensors = ">=0.8.0,<0.9"
+huggingface_hub = ">=1.32.0,<2"
+accelerate = ">=1.15.0,<2"
+gradio = ">=6.32.0,<7"
+
+[target.unix.activation]
+scripts = ["./load_env.sh"]
+
+[pypi-dependencies]
+soundfile = ">=0.14.0, <0.15"

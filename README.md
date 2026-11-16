@@ -1,8 +1,6 @@
 ---
 title: Spokesman
 emoji: 🏆
-colorFrom: pink
-colorTo: green
 sdk: gradio
 sdk_version: 6.32.0
 python_version: '3.12'

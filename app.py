@@ -1,5 +1,6 @@
 import gradio as gr
 
+@spaces.GPU
 def generate_audio(input_text, voice):
     # Placeholder for audio generation logic
     # In a real implementation, you would call your TTS model here
@@ -47,5 +48,5 @@ with gr.Blocks() as app:
     )
     
 
-
-app.launch()
+if __name__ == "__main__":
+    app.launch()

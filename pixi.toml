@@ -21,3 +21,4 @@ scripts = ["./load_env.sh"]
 
 [pypi-dependencies]
 soundfile = ">=0.14.0, <0.15"
+spaces = "*"

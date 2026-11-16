@@ -226,6 +226,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/7b/a2/70fd4432b924684c372df8b0a45708c36c057ef3596c9eb53e0a806b980b/soundfile-0.14.0-py2.py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b6/ae/315bbeee126a769cbde43cf4908acb4b40408d8bf8bbf334dd7368d8dadf/pycparser-3.12-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e9/02/4e7d553a7ac4b4238b38b3c1b80d486e9d4436f8d2acbf87a0997fe3f402/cffi-2.1.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/ed/a5/04979811ad79457a9469369acd69703fdd45017ebac6c34a87e3db99492e/spaces-0.52.1-py3-none-any.whl
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-8_kmp_llvm.conda
   build_number: 8
@@ -3556,3 +3557,15 @@ packages:
   requires_dist:
   - pycparser ; implementation_name != 'PyPy'
   requires_python: '>=3.10'
+- pypi: https://files.pythonhosted.org/packages/ed/a5/04979811ad79457a9469369acd69703fdd45017ebac6c34a87e3db99492e/spaces-0.52.1-py3-none-any.whl
+  name: spaces
+  version: 0.52.1
+  sha256: ac9b44091784c8d16dccc83f06ed2ecf8e9cab03580fc0760ed6e38dae6735c4
+  requires_dist:
+  - packaging
+  - typing-extensions>=4,<5
+  - pydantic>=1,<3
+  - httpx>=0.20
+  - fastapi ; extra == 'serving'
+  - uvicorn ; extra == 'serving'
+  requires_python: '>=3.10,<3.15'

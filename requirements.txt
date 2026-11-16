@@ -4,4 +4,5 @@ safetensors
 accelerate
 gradio
 huggingface_hub
+spaces
 soundfile

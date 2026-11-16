@@ -1,7 +1,7 @@
-torch==2.14.1
-transformers==5.23.0
-safetensors==0.8.0
-accelerate==1.15.0
-gradio==6.32.0
-huggingface_hub==1.32.0
-soundfile==0.14.0
+torch
+transformers
+safetensors
+accelerate
+gradio
+huggingface_hub
+soundfile

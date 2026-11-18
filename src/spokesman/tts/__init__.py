@@ -7,8 +7,8 @@ import spaces
 class TTS:
     def __init__(self):
         model_id = "gradium/phonon-40m-en"
-        self.processor = AutoProcessor.from_pretrained(model_id, device_map="cuda")
-        self.model = GradiumPhononTTSForConditionalGeneration.from_pretrained(model_id, device_map="cuda")
+        self.processor = AutoProcessor.from_pretrained(model_id, device_map="auto")
+        self.model = GradiumPhononTTSForConditionalGeneration.from_pretrained(model_id, device_map="auto")
         self.sample_rate = self.processor.feature_extractor.sampling_rate
 
         self.voice_list =[
@@ -56,7 +56,6 @@ class TTS:
                 print(f"Failed to download voice: {voice['name']} ({voice['lang']}) - {e}") # debug
                 continue
 
-    @spaces.GPU
     def generate_audio(self, input_text: str) -> tuple[int, np.ndarray]:
         print("Start generating audio...") # debug
         conversation = [

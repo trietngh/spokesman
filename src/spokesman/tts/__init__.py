@@ -1,14 +1,13 @@
+import spaces
 from huggingface_hub import hf_hub_download
 import numpy as np
 from safetensors.torch import load_file
 from transformers import AutoProcessor, GradiumPhononTTSForConditionalGeneration
-import spaces
 
 class TTS:
-    @spaces.GPU
     def __init__(self):
         model_id = "gradium/phonon-40m-en"
-        self.processor = AutoProcessor.from_pretrained(model_id, device_map="cuda")
+        self.processor = AutoProcessor.from_pretrained(model_id)
         self.model = GradiumPhononTTSForConditionalGeneration.from_pretrained(model_id, device_map="cuda")
         self.sample_rate = self.processor.feature_extractor.sampling_rate
 
@@ -30,13 +29,13 @@ class TTS:
             print(f"Loaded default voice: {self.current_voice_metadata['name']} ({self.current_voice_metadata['lang']})") # debug
         else:
             raise ValueError("No available voices found.")
-    @spaces.GPU
+
     def get_available_voice_names(self) -> list:
         return [voice["name"] for voice in self.voice_list if voice["available"]]
-    @spaces.GPU
+
     def get_current_voice_name(self) -> str | None:
         return self.current_voice_metadata["name"] if self.current_voice_metadata else None
-    @spaces.GPU
+
     def set_voice_by_name(self, voice_name: str) -> None:
         voice_metadata = next((voice for voice in self.voice_list if voice["name"] == voice_name and voice["available"]), None)
         if voice_metadata:
@@ -45,7 +44,7 @@ class TTS:
             print(f"Set voice to: {self.current_voice_metadata['name']} ({self.current_voice_metadata['lang']})") # debug
         else:
             raise ValueError(f"Voice '{voice_name}' not found or not available.")
-    @spaces.GPU
+
     def download_all_voices(self) -> None:
         for voice in self.voice_list:
             try : 
@@ -57,9 +56,11 @@ class TTS:
                 print(f"Failed to download voice: {voice['name']} ({voice['lang']}) - {e}") # debug
                 continue
 
-    @spaces.GPU
-    def generate_audio(self, input_text: str) -> tuple[int, np.ndarray]:
-        print("Start generating audio...") # debug
+    @spaces.GPU(duration=60)
+    def generate_audio(self, input_text: str, voice_name: str | None = None) -> tuple[int, np.ndarray]:
+        if voice_name:
+            self.set_voice_by_name(voice_name)
+        print(f"Start generating audio with voice {self.get_current_voice_name()}...") # debug
         conversation = [
             {"role": "user", "content": [{"type": "audio"}, {"type": "text", "text": input_text}]},
         ]

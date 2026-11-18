@@ -1,8 +1,7 @@
+import spaces
 from spokesman.tts import TTS
 import gradio as gr
-import spaces
 
-@spaces.GPU
 def spokesman():
     try:
         tts = TTS()
@@ -32,13 +31,11 @@ def spokesman():
         with gr.Row():
             btn_gen = gr.Button("Generate Audio")
         with gr.Row():
-            # output_text = gr.Textbox(label="Output Text", placeholder="The generated audio will be displayed here...")
-            # Output audio component to play the generated audio
             output_audio = gr.Audio(label="Generated Audio")
 
         btn_gen.click(
             fn=tts.generate_audio,
-            inputs=[input_text],
+            inputs=[input_text, voice],
             outputs=[output_audio],
         )
 

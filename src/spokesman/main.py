@@ -1,6 +1,6 @@
 from spokesman.tts import TTS
 import gradio as gr
-
+@spaces.GPU
 def spokesman():
     try:
         tts = TTS()

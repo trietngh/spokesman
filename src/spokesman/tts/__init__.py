@@ -8,7 +8,7 @@ class TTS:
     def __init__(self):
         model_id = "gradium/phonon-40m-en"
         self.processor = AutoProcessor.from_pretrained(model_id)
-        self.model = GradiumPhononTTSForConditionalGeneration.from_pretrained(model_id, device_map="cuda")
+        self.model = GradiumPhononTTSForConditionalGeneration.from_pretrained(model_id)
         self.sample_rate = self.processor.feature_extractor.sampling_rate
 
         self.voice_list =[
@@ -58,22 +58,49 @@ class TTS:
 
     @spaces.GPU(duration=60)
     def generate_audio(self, input_text: str, voice_name: str | None = None) -> tuple[int, np.ndarray]:
+        if not input_text or not input_text.strip():
+            return self.sample_rate, np.zeros(0, dtype=np.float32)
+
         if voice_name:
             self.set_voice_by_name(voice_name)
         print(f"Start generating audio with voice {self.get_current_voice_name()}...") # debug
         conversation = [
-            {"role": "user", "content": [{"type": "audio"}, {"type": "text", "text": input_text}]},
+            {"role": "user", "content": [{"type": "audio"}, {"type": "text", "text": input_text.strip()}]},
         ]
-        inputs = self.processor.apply_chat_template(
-            conversation,
-            tokenize=True,
-            return_dict=True,
-            add_generation_prompt=True,
-            processor_kwargs={"audio_prompt_latents": [self.current_voice]},
-        ).to(self.model.device)
 
-        outputs = self.model.generate(**inputs)
-        audio = self.processor.decode(outputs.audio_latents, outputs.audio_latents_mask)
+        import torch
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        try:
+            self.model = self.model.to(device)
+            if hasattr(self.processor, "audio_tokenizer") and self.processor.audio_tokenizer is not None:
+                self.processor.audio_tokenizer = self.processor.audio_tokenizer.to(device)
+
+            inputs = self.processor.apply_chat_template(
+                conversation,
+                tokenize=True,
+                return_dict=True,
+                add_generation_prompt=True,
+                processor_kwargs={"audio_prompt_latents": [self.current_voice]},
+            ).to(device)
+
+            outputs = self.model.generate(**inputs)
+            audio = self.processor.decode(outputs.audio_latents, outputs.audio_latents_mask)
+        except Exception as e:
+            print(f"CUDA generation error ({e}); executing CPU fallback...") # debug
+            self.model = self.model.to("cpu")
+            if hasattr(self.processor, "audio_tokenizer") and self.processor.audio_tokenizer is not None:
+                self.processor.audio_tokenizer = self.processor.audio_tokenizer.to("cpu")
+
+            inputs = self.processor.apply_chat_template(
+                conversation,
+                tokenize=True,
+                return_dict=True,
+                add_generation_prompt=True,
+                processor_kwargs={"audio_prompt_latents": [self.current_voice]},
+            ).to("cpu")
+
+            outputs = self.model.generate(**inputs)
+            audio = self.processor.decode(outputs.audio_latents, outputs.audio_latents_mask)
 
         # Gradio Audio component expects (sample_rate, numpy_array)
         waveform = audio[0] if isinstance(audio, list) else audio

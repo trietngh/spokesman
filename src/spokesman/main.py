@@ -1,5 +1,7 @@
 from spokesman.tts import TTS
 import gradio as gr
+import spaces
+
 @spaces.GPU
 def spokesman():
     try:

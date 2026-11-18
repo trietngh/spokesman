@@ -4,6 +4,7 @@
 
 # Python cache
 __pycache__/
+*.egg-info/
 
 # Environment files
 .env
